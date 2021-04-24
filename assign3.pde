@@ -13,6 +13,7 @@ int lifeAmount = max(-1,5);
 
 int block = 80; 
 int layer;
+int cameraOffset;
 
 float soldierX,soldierY;
 int soldierSpeed;
@@ -20,6 +21,7 @@ int soldierSpeed;
 float cabbageX,cabbageY;
 
 float groundHogX = 320, groundHogY = 80;
+float actionFrame;
 boolean downPressed = false,leftPressed = false,rightPressed = false;
 
 PImage title, gameover, startNormal, startHovered, restartNormal, restartHovered;
@@ -74,7 +76,7 @@ void draw() {
     }
     /* ------ End of Debug Function ------ */
 
-    
+  translate(0, cameraOffset);  
 	switch (gameState) {
 
 		case GAME_START: // Start Screen
@@ -188,12 +190,29 @@ void draw() {
         } 
 
 		// Player
+      actionFrame = 0;
       if(downPressed){
-          image(groundhogDown,groundHogX,groundHogY);
+          if(actionFrame < 80){
+            image(groundhogDown,groundHogX,groundHogY);
+            actionFrame += block/15;
+            groundHogY += block/15;
+            cameraOffset -= block/15;
+            if(groundHogY >= 25*block) groundHogY=25*block;
+          }
         }else if(leftPressed){
-          image(groundhogLeft,groundHogX,groundHogY);       
+          if(actionFrame < 80){
+            image(groundhogLeft,groundHogX,groundHogY);   
+            actionFrame += block/15;
+            groundHogX -= block/15;
+            if( groundHogX <= 0) groundHogX=0;
+          }    
         }else if(rightPressed){
-          image(groundhogRight,groundHogX,groundHogY);
+          if(actionFrame < 80){
+            image(groundhogRight,groundHogX,groundHogY);   
+            actionFrame += block/15;
+            groundHogX += block/15;
+            if( groundHogX >= width-block) groundHogX=width-block;
+          }  
         }else{
           image(groundhogIdle,groundHogX,groundHogY);
         }
@@ -248,20 +267,13 @@ void keyPressed(){
   if (key == CODED) { 
     switch (keyCode) {
       case DOWN:
-        downPressed = true;
-        groundHogY += block;     
-        if(groundHogY >= height-block) groundHogY=height-block;
-        
+        downPressed = true;             
         break;
       case LEFT:
         leftPressed = true;
-        groundHogX -= block;
-        if( groundHogX <= 0) groundHogX=0;
         break;
       case RIGHT:
         rightPressed = true;
-        groundHogX += block;
-        if( groundHogX >= width-block) groundHogX=width-block;
         break;
     }
   }
