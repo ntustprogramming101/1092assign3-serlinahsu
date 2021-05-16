@@ -23,6 +23,13 @@ float cabbageX,cabbageY;
 float groundHogX = 320, groundHogY = 80;
 float actionFrame;
 boolean downPressed = false,leftPressed = false,rightPressed = false;
+int down = 0;
+int right = 0;
+int left = 0;
+float step = 80.0;
+int frames = 15;
+int floorSpeed = 0;
+float downMove = 0;
 
 PImage title, gameover, startNormal, startHovered, restartNormal, restartHovered;
 PImage bg, life, cabbage, soldier;
@@ -120,53 +127,53 @@ void draw() {
   		//floor 1-4
         for(int i=0; i < 8*block; i+=block){
           for(int j=0; j< 4*block; j+=block){
-            image(soil0, i , 2*block+j);
+            image(soil0, i , 2*block+j+downMove);
           }
         }
       //floor 5-8
         for(int i=0; i < 8*block; i+=block){
           for(int j=0; j< 4*block; j+=block){
-            image(soil1, i , 6*block+j);
+            image(soil1, i , 6*block+j+downMove);
           }
         }
       //floor 9-12
         for(int i=0; i < 8*block; i+=block){
           for(int j=0; j< 4*block; j+=block){
-            image(soil2, i , 10*block+j);
+            image(soil2, i , 10*block+j+downMove);
           }
         }
       //floor 13-16
         for(int i=0; i < 8*block; i+=block){
           for(int j=0; j< 4*block; j+=block){
-            image(soil3, i , 14*block+j);
+            image(soil3, i , 14*block+j+downMove);
           }
         }
       //floor 17-20
         for(int i=0; i < 8*block; i+=block){
           for(int j=0; j< 4*block; j+=block){
-            image(soil4, i , 18*block+j);
+            image(soil4, i , 18*block+j+downMove);
           }
         }
       //floor 21-24
         for(int i=0; i < 8*block; i+=block){
           for(int j=0; j< 4*block; j+=block){
-            image(soil5, i , 22*block+j);
+            image(soil5, i , 22*block+j+downMove);
           }
         }
     //stone
       //floor 1-8
         for(int i=0; i < 8*block; i+=block){
-          image(stone1, i , 2*block+i);
+          image(stone1, i , 2*block+i+downMove);
         } 
       //floor 9-16
         for(int i=0; i < 2*block ; i+=block){
           for(int j=0; j<8*block ; j+=block){
             if(j==0 || j==3*block || j==4*block || j==7*block){
-              image(stone1,block+4*i,10*block+j);
-              image(stone1,2*block+4*i,10*block+j);
+              image(stone1,block+4*i,10*block+j+downMove);
+              image(stone1,2*block+4*i,10*block+j+downMove);
             }else{
-              image(stone1,4*i,10*block+j);
-              image(stone1,3*block+4*i,10*block+j);
+              image(stone1,4*i,10*block+j+downMove);
+              image(stone1,3*block+4*i,10*block+j+downMove);
             }
           }
         } 
@@ -174,48 +181,72 @@ void draw() {
         for(int i=0; i < 3*block ; i+=block){
           for(int j=0; j<8*block ; j+=block){
             if(j % (3*block) == 0){
-              image(stone1,block+3*i,18*block+j);
-              image(stone1,2*block+3*i,18*block+j);
-              image(stone2,2*block+3*i,18*block+j);
+              image(stone1,block+3*i,18*block+j+downMove);
+              image(stone1,2*block+3*i,18*block+j+downMove);
+              image(stone2,2*block+3*i,18*block+j+downMove);
             }else if(j % (3*block) == 1*block){
-              image(stone1,3*i,18*block+j);
-              image(stone1,block+3*i,18*block+j);
-              image(stone2,block+3*i,18*block+j);
+              image(stone1,3*i,18*block+j+downMove);
+              image(stone1,block+3*i,18*block+j+downMove);
+              image(stone2,block+3*i,18*block+j+downMove);
             }else{
-              image(stone1,3*i-block,18*block+j);
-              image(stone1,3*i,18*block+j);
-              image(stone2,3*i,18*block+j);
+              image(stone1,3*i-block,18*block+j+downMove);
+              image(stone1,3*i,18*block+j+downMove);
+              image(stone2,3*i,18*block+j+downMove);
             }
           }
         } 
 
 		// Player
-      actionFrame = 0;
-      if(downPressed){
-          if(actionFrame < 80){
-            image(groundhogDown,groundHogX,groundHogY);
-            actionFrame += block/15;
-            groundHogY += block/15;
-            cameraOffset -= block/15;
-            if(groundHogY >= 25*block) groundHogY=25*block;
-          }
-        }else if(leftPressed){
-          if(actionFrame < 80){
-            image(groundhogLeft,groundHogX,groundHogY);   
-            actionFrame += block/15;
-            groundHogX -= block/15;
-            if( groundHogX <= 0) groundHogX=0;
-          }    
-        }else if(rightPressed){
-          if(actionFrame < 80){
-            image(groundhogRight,groundHogX,groundHogY);   
-            actionFrame += block/15;
-            groundHogX += block/15;
-            if( groundHogX >= width-block) groundHogX=width-block;
-          }  
-        }else{
-          image(groundhogIdle,groundHogX,groundHogY);
+      if(down > 0 && downMove > -1600) {
+        floorSpeed -=1;
+        if (down == 1) {
+          downMove = round(step/frames*floorSpeed);
+          image(groundhogIdle, groundHogX, groundHogY);
+        } else {
+          downMove = step/frames*floorSpeed;
+          image(groundhogDown, groundHogX, groundHogY);
         }
+          down -=1;
+        }
+       if (down > 0 && downMove == -1600) {
+          if (down == 1) {
+            groundHogY = round(groundHogY + step/frames);
+            image(groundhogIdle, groundHogX, groundHogY);
+          } else {
+            groundHogY = groundHogY + step/frames;
+            image(groundhogDown, groundHogX, groundHogY);
+          }
+          down -=1;
+        }
+        //left
+        if (left > 0) {
+          if (left == 1) {
+            groundHogX = round(groundHogX - step/frames);
+            image(groundhogIdle, groundHogX, groundHogY);
+          } else {
+            groundHogX = groundHogX - step/frames;
+            image(groundhogLeft, groundHogX, groundHogY);
+          }
+          left -=1;
+        }
+
+        //right
+        if (right > 0) {
+          if (right == 1) {
+            groundHogX = round(groundHogX + step/frames);
+            image(groundhogIdle, groundHogX, groundHogY);
+          } else {
+            groundHogX = groundHogX + step/frames;
+            image(groundhogRight, groundHogX, groundHogY);
+          }
+          right -=1;
+        }
+
+        //no move
+        if (down == 0 && left == 0 && right == 0 ) {
+          image(groundhogIdle, groundHogX, groundHogY);
+        }
+
       
       
 		// Health UI
@@ -264,19 +295,31 @@ void draw() {
 
 void keyPressed(){
 	// Add your moving input code here
-  if (key == CODED) { 
-    switch (keyCode) {
+    if (down>0 || left>0 || right>0) {
+      return;
+    }
+    if (key == CODED) {
+      switch(keyCode) {
       case DOWN:
-        downPressed = true;             
+        if (groundHogY < 400) {
+          downPressed = true;
+          down = 15;
+        }
         break;
       case LEFT:
-        leftPressed = true;
+        if (groundHogX > 0) {
+          leftPressed = true;
+          left = 15;
+        }
         break;
       case RIGHT:
-        rightPressed = true;
+        if (groundHogX < 560) {
+          rightPressed = true;
+          right = 15;
+        }
         break;
+      }
     }
-  }
 	// DO NOT REMOVE OR EDIT THE FOLLOWING SWITCH/CASES
     switch(key){
       case 'w':
